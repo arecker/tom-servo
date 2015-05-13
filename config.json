@@ -16,5 +16,7 @@
     "libpq-dev",
     "postgresql",
     "postgresql-contrib"
-  ]
+  ],
+
+  "git_path": "/home/alex/git"
 }

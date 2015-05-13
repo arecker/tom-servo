@@ -29,7 +29,8 @@ class Input(object):
     Gets handed back and forth between tasks
     """
     def __init__(self):
-        pass
+        self.url = prompt('Git URL:')
+        self.name = prompt('Repo Name:')
 
 
 @task
@@ -44,12 +45,23 @@ def handshake():
 @task
 def bootstrap():
     """
-    - Install all needed linux packages on the server
+    Install all needed linux packages on the server
     """
     import dependencies
     dependencies.main(Config)
     dependencies.verify(Config)
     print('Bootstrap successful')
+
+
+@task
+def git_update():
+    """
+    Refreshes a git repository
+    """
+    import git
+    i = Input()
+    git.main(Config, i)
+    git.verify(Config, i)
 
 
 if __name__ == '__main__':
