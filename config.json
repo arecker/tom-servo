@@ -1,0 +1,13 @@
+{
+  "env": {
+    "use_ssh_config": true,
+    "password": "lorelaitest",
+    "hosts": [
+      "test-lorelai"
+    ]
+  },
+
+  "dependencies": [
+
+  ]
+}
