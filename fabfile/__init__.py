@@ -6,19 +6,24 @@ import os
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 
-# Get Raw Config Data
+# Build Config and Env
+class Config:
+    pass
+
+
 import json
-CONFIG = None
 with open(os.path.join(PROJECT_ROOT, '..', 'config.json')) as file:
-    CONFIG = json.load(file)
+    data = json.load(file)
+    for item in data:
+        if item == 'env':
+            env_place = data['env']
+            for i in data[item]:
+                setattr(env, i, env_place[i])
+        else:
+            setattr(Config, item, data[item])
 
 
-# Setup fab environment
-for item in CONFIG['env']:
-    setattr(env, item, CONFIG['env'][item])
-
-
-class InputModel(object):
+class Input(object):
     """
     Everything we'll need from the user
     Gets handed back and forth between tasks
@@ -39,5 +44,5 @@ def handshake(model=None):
 if __name__ == '__main__':
     import sys
     from fabric.main import main
-    sys.argv = ['fab', '-f', __file__, 'handshake']
+    sys.argv = ['fab', '-f', __file__, 'handshake'] # whatever taks you are testing
     main()
