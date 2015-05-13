@@ -8,6 +8,13 @@
   },
 
   "dependencies": [
-    "python-dev"
+    "git",
+    "ufw",
+    "nginx",
+    "python-dev",
+    "python-virtualenv",
+    "libpq-dev",
+    "postgresql",
+    "postgresql-contrib"
   ]
 }

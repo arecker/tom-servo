@@ -33,7 +33,7 @@ class Input(object):
 
 
 @task
-def handshake(model=None):
+def handshake():
     """
     Say hello to the server
     """
@@ -41,8 +41,19 @@ def handshake(model=None):
     print('Handshake successful')
 
 
+@task
+def bootstrap():
+    """
+    - Install all needed linux packages on the server
+    """
+    import dependencies
+    dependencies.main(Config)
+    dependencies.verify(Config)
+    print('Bootstrap successful')
+
+
 if __name__ == '__main__':
     import sys
     from fabric.main import main
-    sys.argv = ['fab', '-f', __file__, 'handshake'] # whatever taks you are testing
+    sys.argv = ['fab', '-f', __file__, 'bootstrap'] # whatever taks you are testing
     main()
