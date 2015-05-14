@@ -23,7 +23,7 @@ with open(os.path.join(PROJECT_ROOT, '..', 'config.json')) as file:
             setattr(Config, item, data[item])
 
 
-class Input(object):
+class UserInput(object):
     """
     Everything we'll need from the user
     Gets handed back and forth between tasks
@@ -54,18 +54,32 @@ def bootstrap():
 
 
 @task
-def git_update():
+def git_update(ui=None):
     """
     Refreshes a git repository
     """
+    if not ui:
+        ui = UserInput
     import git
-    i = Input()
-    git.main(Config, i)
-    git.verify(Config, i)
+    git.main(Config, ui)
+    git.verify(Config, ui)
+
+
+@task
+def python_env(ui=None):
+    """
+    Creates/Updates a projects virtualenv
+    """
+    if not ui:
+        ui = UserInput()
+    git_update(ui)
+    import virtualenv
+    virtualenv.main(Config, ui)
+    virtualenv.verify(Config, ui)
 
 
 if __name__ == '__main__':
     import sys
     from fabric.main import main
-    sys.argv = ['fab', '-f', __file__, 'bootstrap'] # whatever taks you are testing
+    sys.argv = ['fab', '-f', __file__, 'python_env'] # whatever task you are testing
     main()

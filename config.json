@@ -9,6 +9,7 @@
 
   "dependencies": [
     "git",
+    "gcc",
     "ufw",
     "nginx",
     "python-dev",
@@ -18,5 +19,6 @@
     "postgresql-contrib"
   ],
 
-  "git_path": "/home/alex/git"
+  "git_path": "/home/alex/git",
+  "env_path": "/home/alex/envs"
 }
