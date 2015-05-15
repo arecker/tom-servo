@@ -21,8 +21,10 @@ def main(config, ui):
             run('git clean -f -d')
             run('git pull origin master')
 
+    _verify(config, ui)
 
-def verify(config, ui):
+
+def _verify(config, ui):
     exists(config.git_path) # git path exists
     exists(os.path.join(config.git_path, ui.name)) # repo path exists
     with cd(os.path.join(config.git_path, ui.name)):

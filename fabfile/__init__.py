@@ -49,7 +49,6 @@ def bootstrap():
     """
     import dependencies
     dependencies.main(Config)
-    dependencies.verify(Config)
     print('Bootstrap successful')
 
 
@@ -62,7 +61,6 @@ def git_update(ui=None):
         ui = UserInput
     import git
     git.main(Config, ui)
-    git.verify(Config, ui)
 
 
 @task
@@ -75,7 +73,6 @@ def python_env(ui=None):
     git_update(ui)
     import virtualenv
     virtualenv.main(Config, ui)
-    virtualenv.verify(Config, ui)
 
 
 if __name__ == '__main__':

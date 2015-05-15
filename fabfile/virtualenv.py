@@ -9,9 +9,10 @@ def main(config, ui):
         if not exists('./{0}'.format(ui.name)):
             run('virtualenv --no-site-packages {0}'.format(ui.name))
         run('./{0}/bin/pip install -r {1}/{0}/requirements.txt'.format(ui.name, config.git_path))
+    _verify(config, ui)
 
 
-def verify(config, ui):
+def _verify(config, ui):
     if not exists(config.env_path):
         raise 'Environment directory was not written to disk'
     with cd(config.env_path):
