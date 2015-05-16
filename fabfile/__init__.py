@@ -11,6 +11,10 @@ class Config:
     pass
 
 
+class Data:
+    pass
+
+
 import json
 with open(os.path.join(PROJECT_ROOT, '..', 'config.json')) as file:
     data = json.load(file)
@@ -31,6 +35,21 @@ class UserInput(object):
     def __init__(self):
         self.url = prompt('Git URL:')
         self.name = prompt('Repo Name:')
+        self.domain = prompt('Domain:')
+
+
+def build_settings_data(db_pass, ui):
+    import settings_reader
+    import passwords
+    data = Data()
+    data.password = db_pass
+    if not data.password:
+        data.password = settings_reader.get_db_password(Config, ui)
+    data.name = ui.name
+    data.domain = ui.domain
+    data.apps = settings_reader.get_installed_apps(Config, ui)
+    data.secret = passwords.get_secret_key()
+    return data
 
 
 @task
@@ -56,49 +75,39 @@ def bootstrap():
 
 
 @task
-def git_update(ui=None):
-    """
-    Refreshes a git repository
-    """
-    if not ui:
-        ui = UserInput
-    import git
-    git.main(Config, ui)
-
-
-@task
-def python_env(ui=None):
-    """
-    Creates/Updates a projects virtualenv
-    """
-    if not ui:
-        ui = UserInput()
-    git_update(ui)
-    import virtualenv
-    virtualenv.main(Config, ui)
-
-
-@task
-def database(ui=None):
-    if not ui:
-        ui = UserInput()
-    import database
-    database.bootstrap(Config, ui)
-
-
-@task
 def deploy(ui=None):
     """
     Deploys a django applications from a git URL
     """
     if not ui:
         ui = UserInput()
-    git_update(ui)
-    python_env(ui)
+
+    # Git
+    import git
+    git.main(Config, ui)
+
+    # Virtualenv
+    import virtualenv
+    virtualenv.main(Config, ui)
+
+    # Database
+    import database
+    db_pass = database.bootstrap(Config, ui)
+
+    # django settings
+    data = build_settings_data(db_pass, ui)
+    import templates_renderer
+    templates_renderer.create_prod_settings(ui, data)
+
+
+@task
+def test():
+    import templates_renderer
+    templates_renderer.create_prod_settings('hi', 'hi')
 
 
 if __name__ == '__main__':
     import sys
     from fabric.main import main
-    sys.argv = ['fab', '-f', __file__, 'python_env'] # whatever task you are testing
+    sys.argv = ['fab', '-f', __file__, 'test'] # whatever task you are testing
     main()

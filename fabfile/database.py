@@ -7,7 +7,9 @@ def bootstrap(config, ui):
     Returns authentication password
     """
     if _database_exists(ui.name):
-        print('exists')# get password
+        print('exists')
+        import settings_reader
+        return settings_reader.get_db_password(config, ui)
     else:
         return _create_db(ui.name)
 
