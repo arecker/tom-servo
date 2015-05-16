@@ -19,6 +19,11 @@
     "postgresql-contrib"
   ],
 
+  "ports": [
+    22,
+    80
+  ],
+
   "git_path": "/home/alex/git",
   "env_path": "/home/alex/envs"
 }

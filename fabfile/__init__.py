@@ -46,9 +46,12 @@ def handshake():
 def bootstrap():
     """
     Install all needed linux packages on the server
+    Sets up firewall
     """
     import dependencies
     dependencies.main(Config)
+    import firewall
+    firewall.main(Config)
     print('Bootstrap successful')
 
 
@@ -73,6 +76,25 @@ def python_env(ui=None):
     git_update(ui)
     import virtualenv
     virtualenv.main(Config, ui)
+
+
+@task
+def database(ui=None):
+    if not ui:
+        ui = UserInput()
+    import database
+    database.bootstrap(Config, ui)
+
+
+@task
+def deploy(ui=None):
+    """
+    Deploys a django applications from a git URL
+    """
+    if not ui:
+        ui = UserInput()
+    git_update(ui)
+    python_env(ui)
 
 
 if __name__ == '__main__':
