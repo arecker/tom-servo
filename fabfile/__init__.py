@@ -91,10 +91,12 @@ def deploy():
     data = build_settings_data(db_pass)
     import templates_renderer
     templates_renderer.create_prod_settings(Config, data)
+    templates_renderer.create_prod_wsgi(Config, data)
 
     # django manage.py actions
     import django_manage
     django_manage.migrate(Config)
+    django_manage.collect_static(Config)
 
 
 if __name__ == '__main__':

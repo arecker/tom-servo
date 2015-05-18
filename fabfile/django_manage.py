@@ -3,6 +3,8 @@ import os
 
 
 def migrate(config):
+    command = 'makemigrations'
+    _execute_manage_command(config, command)
     command = 'migrate'
     _execute_manage_command(config, command)
 

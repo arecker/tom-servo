@@ -15,6 +15,13 @@ def create_prod_settings(config, data):
     _put_template(filename, destination, context)
 
 
+def create_prod_wsgi(config, data):
+    filename='prod_wsgi.jinja'
+    destination=os.path.join(config.git_path, config.name, config.name, 'prod_wsgi.py')
+    context={ 'data': data }
+    _put_template(filename, destination, context)
+
+
 def _put_template(filename, destination, context):
     files.upload_template(
         filename=filename,
