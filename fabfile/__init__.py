@@ -26,29 +26,25 @@ with open(os.path.join(PROJECT_ROOT, '..', 'config.json')) as file:
         else:
             setattr(Config, item, data[item])
 
-
-class UserInput(object):
-    """
-    Everything we'll need from the user
-    Gets handed back and forth between tasks
-    """
-    def __init__(self):
-        self.url = prompt('Git URL:')
-        self.name = prompt('Repo Name:')
-        self.domain = prompt('Domain:')
+    if not hasattr(Config, 'url'):
+        Config.url = prompt('Git URL:')
+    if not hasattr(Config, 'name'):
+        Config.name = prompt('Repo Name:')
+    if not hasattr(Config, 'domain'):
+        Config.domain = prompt('Domain:')
 
 
-def build_settings_data(db_pass, ui):
+def build_settings_data(db_pass):
     import settings_reader
     import passwords
     data = Data()
     data.password = db_pass
     if not data.password:
-        data.password = settings_reader.get_db_password(Config, ui)
-    data.name = ui.name
-    data.domain = ui.domain
-    data.apps = settings_reader.get_installed_apps(Config, ui)
-    data.secret = passwords.get_secret_key()
+        data.password = settings_reader.get_db_password(Config)
+    data.name = Config.name
+    data.domain = Config.domain
+    data.apps = settings_reader.get_installed_apps(Config)
+    data.secret = settings_reader.get_secret_key(Config)
     return data
 
 
@@ -75,39 +71,34 @@ def bootstrap():
 
 
 @task
-def deploy(ui=None):
+def deploy():
     """
     Deploys a django applications from a git URL
     """
-    if not ui:
-        ui = UserInput()
-
     # Git
     import git
-    git.main(Config, ui)
+    git.main(Config)
 
     # Virtualenv
     import virtualenv
-    virtualenv.main(Config, ui)
+    virtualenv.main(Config)
 
     # Database
     import database
-    db_pass = database.bootstrap(Config, ui)
+    db_pass = database.bootstrap(Config)
 
     # django settings
-    data = build_settings_data(db_pass, ui)
+    data = build_settings_data(db_pass)
     import templates_renderer
-    templates_renderer.create_prod_settings(ui, data)
+    templates_renderer.create_prod_settings(Config, data)
 
-
-@task
-def test():
-    import templates_renderer
-    templates_renderer.create_prod_settings('hi', 'hi')
+    # django manage.py actions
+    import django_manage
+    django_manage.migrate(Config)
 
 
 if __name__ == '__main__':
     import sys
     from fabric.main import main
-    sys.argv = ['fab', '-f', __file__, 'test'] # whatever task you are testing
+    sys.argv = ['fab', '-f', __file__, 'deploy'] # whatever task you are testing
     main()

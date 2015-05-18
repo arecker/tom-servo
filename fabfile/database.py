@@ -1,17 +1,17 @@
 from fabric.api import *
 
 
-def bootstrap(config, ui):
+def bootstrap(config):
     """
     Verifies database - creates it if needed
     Returns authentication password
     """
-    if _database_exists(ui.name):
+    if _database_exists(config.name):
         print('exists')
         import settings_reader
-        return settings_reader.get_db_password(config, ui)
+        return settings_reader.get_db_password(config)
     else:
-        return _create_db(ui.name)
+        return _create_db(config.name)
 
 
 def _database_exists(db_name):

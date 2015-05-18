@@ -11,8 +11,8 @@ ALLOWED_HOSTS = [ '{{ data.domain }}' ]
 
 
 INSTALLED_APPS = (
-    {% for app in apps %}
-    '{{ app }}'
+    {% for app in data.apps %}
+    '{{ app }}',
     {% endfor %}
 )
 
@@ -52,7 +52,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': '{{ data.name }}',
         'USER': '{{ data.name }}',
-        'PASSWORD': '{{ data.password }},'
+        'PASSWORD': '{{ data.password }}',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
