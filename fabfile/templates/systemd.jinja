@@ -1,0 +1,11 @@
+[Unit]
+Description={{ data.name }} gunicorn daemon
+After=network.target
+
+[Service]
+User={{ data.user }}
+WorkingDirectory={{ data.working_dir }}
+ExecStart={{ data.gunicorn }} {{ data.wsgi }}
+
+[Install]
+WantedBy=multi-user.target

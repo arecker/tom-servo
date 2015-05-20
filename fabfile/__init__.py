@@ -34,20 +34,6 @@ with open(os.path.join(PROJECT_ROOT, '..', 'config.json')) as file:
         Config.domain = prompt('Domain:')
 
 
-def build_settings_data(db_pass):
-    import settings_reader
-    import passwords
-    data = Data()
-    data.password = db_pass
-    if not data.password:
-        data.password = settings_reader.get_db_password(Config)
-    data.name = Config.name
-    data.domain = Config.domain
-    data.apps = settings_reader.get_installed_apps(Config)
-    data.secret = settings_reader.get_secret_key(Config)
-    return data
-
-
 @task
 def handshake():
     """
@@ -88,15 +74,21 @@ def deploy():
     db_pass = database.bootstrap(Config)
 
     # django settings
-    data = build_settings_data(db_pass)
-    import templates_renderer
-    templates_renderer.create_prod_settings(Config, data)
-    templates_renderer.create_prod_wsgi(Config, data)
+    from templates_renderer import ProdDjangoSettings
+    ProdDjangoSettings(Config, db_pass).upload()
 
     # django manage.py actions
     import django_manage
     django_manage.migrate(Config)
     django_manage.collect_static(Config)
+
+    # Gunicorn/Systemd
+    from templates_renderer import SystemdService
+    SystemdService(Config).upload().activate()
+
+    # Nginx
+    from templates_renderer import NginxConfig
+    NginxConfig(Config).upload().activate()
 
 
 if __name__ == '__main__':

@@ -24,6 +24,12 @@
     80
   ],
 
+  "user": "alex",
+
   "git_path": "/home/alex/git",
-  "env_path": "/home/alex/envs"
+  "env_path": "/home/alex/envs",
+
+  "name": "comics",
+  "url": "https://bitbucket.org/arecker/comics.git",
+  "domain": "comics.local"
 }
