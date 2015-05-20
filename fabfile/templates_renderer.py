@@ -59,7 +59,9 @@ class NginxConfig:
         """
         TODO: Create symlink in sites-enabled and reload server
         """
-        sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(self.name))
+        enabled_path = os.path.join('/etc/nginx/sites-enabled/{0}'.format(self.name))
+        if not files.exists(enabled_path):
+            sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(self.name))
         sudo('nginx -s reload')
 
 
