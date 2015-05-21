@@ -79,8 +79,7 @@ def deploy():
 
     # django manage.py actions
     import django_manage
-    django_manage.migrate(Config)
-    django_manage.collect_static(Config)
+    django_manage.make(Config)
 
     # Gunicorn/Systemd
     from templates_renderer import SystemdService
@@ -89,6 +88,10 @@ def deploy():
     # Nginx
     from templates_renderer import NginxConfig
     NginxConfig(Config).upload().activate()
+
+    # Hosts
+    import hosts
+    hosts.append_if_needed(Config.domain)
 
 
 if __name__ == '__main__':

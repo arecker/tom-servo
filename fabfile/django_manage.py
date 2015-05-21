@@ -1,15 +1,26 @@
 from fabric.api import *
+from fabric.main import files
 import os
 
 
-def migrate(config):
+def make(config):
+    with cd(os.path.join(config.git_path, config.name)):
+        if files.exists('makefile'):
+            with prefix('source {0}'.format(os.path.join(config.env_path, config.name, 'bin/activate'))):
+                run('make')
+        else:
+            _migrate(config)
+            _collect_static(config)
+
+
+def _migrate(config):
     command = 'makemigrations'
     _execute_manage_command(config, command)
     command = 'migrate'
     _execute_manage_command(config, command)
 
 
-def collect_static(config):
+def _collect_static(config):
     command = 'collectstatic --noinput'
     _execute_manage_command(config, command)
 

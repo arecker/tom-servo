@@ -1,6 +1,7 @@
 from fabric.main import *
 from fabric.api import *
 from data import Data
+from ports import get_port
 """
 Renders templates onto the server
 """
@@ -44,7 +45,7 @@ class NginxConfig:
         self.name = config.name
         self.data.domain = config.domain
         self.data.static_path = os.path.join(config.git_path, config.name, 'prod_static', '')
-        self.data.port = '8000' # TODO Dynamic
+        self.data.port = get_port(config.name)
 
 
     def upload(self):
@@ -73,7 +74,7 @@ class SystemdService:
         self.data.working_dir = os.path.join(config.git_path, config.name)
         self.data.gunicorn = os.path.join(config.env_path, config.name, 'bin/gunicorn')
         self.data.wsgi = config.name + '.wsgi'
-        self.data.port = '8000' # TODO get dynamically
+        self.data.port = get_port(config.name)
 
 
     def upload(self):
@@ -85,8 +86,5 @@ class SystemdService:
 
 
     def activate(self):
-        """
-        TODO: Reload services, enable job, start job
-        """
         sudo('systemctl daemon-reload')
         sudo('systemctl enable {0} && systemctl restart {0}'.format(self.data.name))

@@ -10,13 +10,23 @@
   "dependencies": [
     "git",
     "gcc",
+    "build-essential",
     "ufw",
     "nginx",
     "python-dev",
     "python-virtualenv",
+    "nodejs",
+    "nodejs-legacy",
+    "npm",
     "libpq-dev",
     "postgresql",
     "postgresql-contrib"
+  ],
+
+  "npm_dependencies": [
+    "grunt",
+    "grunt-cli",
+    "bower"
   ],
 
   "ports": [

@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User={{ data.user }}
 WorkingDirectory={{ data.working_dir }}
-ExecStart={{ data.gunicorn }} {{ data.wsgi }}
+ExecStart={{ data.gunicorn }} {{ data.wsgi }} -b 0.0.0.0:{{ data.port }}
 
 [Install]
 WantedBy=multi-user.target
