@@ -20,7 +20,8 @@
     "npm",
     "libpq-dev",
     "postgresql",
-    "postgresql-contrib"
+    "postgresql-contrib",
+    "libncurses5-dev"
   ],
 
   "npm_dependencies": [
@@ -39,7 +40,7 @@
   "git_path": "/home/alex/git",
   "env_path": "/home/alex/envs",
 
-  "name": "comics",
-  "url": "https://bitbucket.org/arecker/comics.git",
-  "domain": "comics.local"
+  "name": "blog",
+  "url": "https://bitbucket.org/arecker/blog.git",
+  "domain": "blog.local"
 }
