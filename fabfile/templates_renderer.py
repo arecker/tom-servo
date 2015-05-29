@@ -1,5 +1,6 @@
 from fabric.main import *
 from fabric.api import *
+from fabric.contrib.files import exists
 from data import Data
 from ports import get_port
 """
@@ -21,6 +22,8 @@ def _put_template(filename, destination, context, use_sudo=False):
 class ProdDjangoSettings:
     def __init__(self, config, db_pass):
         import settings_reader
+        log_path = os.path.join(config.log_path, config.name + '.log')
+
         data = Data()
         data.password = db_pass
         if not data.password:
@@ -28,8 +31,16 @@ class ProdDjangoSettings:
         data.name = config.name
         data.domain = config.domain
         data.secret = settings_reader.get_secret_key(config)
+        data.log = os.path.join(config.log_path, config.name + '.log')
         self.data = data
         self.config = config
+
+        # is there a better place to do this?
+        if not exists(config.log_path):
+            run('mkdir -p {0}'.format(config.log_path))
+        run('touch {0}'.format(log_path))
+
+
 
 
     def upload(self):

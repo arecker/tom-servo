@@ -39,6 +39,7 @@
 
   "git_path": "/home/alex/git",
   "env_path": "/home/alex/envs",
+  "log_path": "/home/alex/logs/",
 
   "name": "blog",
   "url": "https://github.com/arecker/blog.git",
