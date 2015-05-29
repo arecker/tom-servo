@@ -41,6 +41,6 @@
   "env_path": "/home/alex/envs",
 
   "name": "blog",
-  "url": "https://bitbucket.org/arecker/blog.git",
+  "url": "https://github.com/arecker/blog.git",
   "domain": "blog.local"
 }
