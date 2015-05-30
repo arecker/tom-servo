@@ -36,6 +36,7 @@
   ],
 
   "user": "alex",
+  "email_password": "password",
 
   "git_path": "/home/alex/git",
   "env_path": "/home/alex/envs",

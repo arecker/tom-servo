@@ -30,6 +30,7 @@ class ProdDjangoSettings:
             data.password = settings_reader.get_db_password(config)
         data.name = config.name
         data.domain = config.domain
+        data.email_password = config.email_password
         data.secret = settings_reader.get_secret_key(config)
         data.log = os.path.join(config.log_path, config.name + '.log')
         self.data = data
