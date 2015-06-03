@@ -8,7 +8,6 @@ def main(config):
     with cd(config.env_path):
         if not exists('./{0}'.format(config.name)):
             run('virtualenv --no-site-packages {0}'.format(config.name))
-        run('./{0}/bin/pip install -r {1}/{0}/requirements.txt'.format(config.name, config.git_path))
     _verify(config)
 
 
