@@ -8,12 +8,13 @@ setup(
     author='Alex Recker',
     author_email='alex@reckerfamily.com',
     license='GPLv3',
-    packages=['src'],
+    packages=['src', 'src.modules'],
     entry_points={
         'console_scripts': ['tom-servo=src.tom_servo:cli_main']
     },
     install_requires=[
         'click',
-        'fabric'
+        'fabric',
+        'pyyaml'
     ]
 )
