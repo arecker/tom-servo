@@ -26,8 +26,8 @@ class Config(object):
                 env_place = data['env']
                 for i in data[item]:
                     setattr(env, i, env_place[i])
-                else:
-                    setattr(self, item, data[item])
+            else:
+                setattr(self, item, data[item])
 
 
 @click.group()
@@ -44,8 +44,28 @@ def handshake(config):
     """
     say hello to the server
     """
-    from src.modules import HandShake
+    from modules import HandShake
     HandShake(Config(config))
+
+
+@cli_main.command()
+@click.option('config', '--config', type=click.Path(), help='path to config file')
+def bootstrap(config):
+    """
+    bootstrap a server
+    """
+    from modules import DependencyInstaller
+    DependencyInstaller(Config(config))
+
+
+@cli_main.command()
+@click.option('config', '--config', type=click.Path(), help='path to config file')
+def django(config):
+    """
+    deploy a django application
+    """
+    from modules import DjangoApplication
+    DjangoApplication(Config(config))
 
 
 if __name__ == '__main__':
