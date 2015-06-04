@@ -44,7 +44,7 @@ def handshake(config):
     """
     say hello to the server
     """
-    from modules import HandShake
+    from servos import HandShake
     HandShake(Config(config))
 
 
@@ -55,10 +55,10 @@ def bootstrap(config):
     bootstrap a server
     """
     c = Config(config)
-    from modules import DependencyInstaller
+    from servos import DependencyInstaller
     DependencyInstaller(c)
 
-    from modules import FirewallBuilder
+    from servos import FirewallBuilder
     FirewallBuilder(c)
 
 
@@ -69,7 +69,7 @@ def django(config):
     deploy a django application
     """
     c = Config(config)
-    from modules import DjangoApplication
+    from servos import DjangoApplication
     DjangoApplication(c)
 
 
