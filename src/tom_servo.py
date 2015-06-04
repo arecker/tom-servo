@@ -54,8 +54,12 @@ def bootstrap(config):
     """
     bootstrap a server
     """
+    c = Config(config)
     from modules import DependencyInstaller
-    DependencyInstaller(Config(config))
+    DependencyInstaller(c)
+
+    from modules import FirewallBuilder
+    FirewallBuilder(c)
 
 
 @cli_main.command()
@@ -64,8 +68,9 @@ def django(config):
     """
     deploy a django application
     """
+    c = Config(config)
     from modules import DjangoApplication
-    DjangoApplication(Config(config))
+    DjangoApplication(c)
 
 
 if __name__ == '__main__':

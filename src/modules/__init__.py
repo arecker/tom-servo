@@ -23,6 +23,16 @@ class DependencyInstaller(object):
             sudo('npm install -g {0}'.format(package))
 
 
+class FirewallBuilder(object):
+    def __init__(self, config):
+        sudo('ufw default deny incoming')
+        sudo('ufw default allow outgoing')
+        for p in config.ports:
+            sudo('ufw allow {0}'.format(p))
+        sudo('ufw --force enable')
+        sudo('service ufw restart') # TODO: should probably restart this with the new systemd syntax
+
+
 class DjangoApplication(object):
     def __init__(self, config):
         pass
