@@ -55,6 +55,9 @@ def bootstrap(config):
     bootstrap a server
     """
     c = Config(config)
+    from servos import PathCreator
+    PathCreator(c)
+    
     from servos import DependencyInstaller
     DependencyInstaller(c)
 
