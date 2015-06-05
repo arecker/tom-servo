@@ -1,4 +1,5 @@
 from fabric.api import *
+from fabric.contrib import files
 
 
 class HandShake(object):
@@ -31,6 +32,14 @@ class FirewallBuilder(object):
             sudo('ufw allow {0}'.format(p))
         sudo('ufw --force enable')
         sudo('service ufw restart') # TODO: should probably restart this with the new systemd syntax
+
+
+class HostWriter(object):
+    def __init__(self, config):
+        if files.contains('/etc/hosts', config.domain):
+            pass
+        else:
+            files.append('/etc/hosts', '127.0.0.1    {0}'.format(config.domain, use_sudo=True)
 
 
 class DjangoApplication(object):
