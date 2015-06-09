@@ -15,9 +15,11 @@ setup(
     entry_points={
         'console_scripts': ['tom-servo=src.tom_servo:cli_main']
     },
+    include_package_data=True,
     install_requires=[
         'click',
         'fabric',
-        'pyyaml'
+        'pyyaml',
+        'jinja2'
     ]
 )

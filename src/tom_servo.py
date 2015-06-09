@@ -81,7 +81,14 @@ def test():
     """
     test something random
     """
-    print('hello')
+    import jinja2
+    import os
+    path = os.path.join(os.path.dirname(__file__),"templates")
+    print('PATH: ' + path)
+    loader=jinja2.FileSystemLoader(path)
+    env = jinja2.Environment(loader=loader)
+    template = env.get_template('test.txt')
+    print template.render()
 
 
 if __name__ == '__main__':
