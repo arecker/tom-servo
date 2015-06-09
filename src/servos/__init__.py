@@ -88,7 +88,8 @@ class HostWriter(object):
         if files.contains('/etc/hosts', config.domain):
             pass
         else:
-            files.append('/etc/hosts', '127.0.0.1    {0}'.format(config.domain, use_sudo=True))
+            #files.append('/etc/hosts', '127.0.0.1    {0}'.format(config.domain, use_sudo=True)) Not working?
+            sudo('echo "127.0.0.1     {0}" >> /etc/hosts'.format(config.domain))
 
 
 class PortManager(object):
@@ -98,7 +99,7 @@ class PortManager(object):
     def __init__(self, config):
         self._touch_file()
         self._read_file()
-        return self._get_highest_port(config.name)
+        self.config = config
 
 
     def _touch_file(self):
@@ -106,11 +107,12 @@ class PortManager(object):
             run('echo "localhost: 7999" > ~/ports.yml')
 
 
-    def _read_file(self, name):
+    def _read_file(self):
         self.data = yaml.load(run('cat ~/ports.yml'))
 
 
-    def _get_highest_port(self, name):
+    def get_highest_port(self):
+        name = self.config.name
         try:
             return self.data[name]
         except KeyError:
@@ -137,6 +139,14 @@ class PasswordGenerator:
     @staticmethod
     def generate_db_password():
         return PasswordGenerator._generate_hash(10)
+
+
+class DjangoMaker(object):
+    def __init__(self, config):
+        with cd(os.path.join(config.git_path, config.name)):
+            if files.exists('makefile'):
+                with prefix('source {0}'.format(os.path.join(config.env_path, config.name, 'bin/activate'))):
+                    run('make')
 
 
 class DatabaseCreator(object):
@@ -172,6 +182,12 @@ class DatabaseCreator(object):
 
 class DjangoApplication:
     def __init__(self, config):
+        from renderer import ProdDjangoSettings, SystemdService, NginxConfig
         GitUpdater(config)
         EnvironmentCreator(config)
         DatabaseCreator(config)
+        ProdDjangoSettings(config).upload()
+        DjangoMaker(config)
+        SystemdService(config).upload().activate()
+        NginxConfig(config).upload().activate()
+        HostWriter(config)
