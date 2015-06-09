@@ -10,7 +10,6 @@ setup(
     license='GPLv3',
     packages=[
         'src',
-        'src.servos'
     ],
     entry_points={
         'console_scripts': ['tom-servo=src.tom_servo:cli_main']

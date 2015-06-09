@@ -1,7 +1,9 @@
 import os
 from fabric.contrib import files
 from fabric.api import *
+
 from src.servos import PortManager
+from src import config
 
 
 class Data:
@@ -14,13 +16,13 @@ def _put_template(filename, destination, context, use_sudo=False):
         destination=destination,
         context=context,
         use_jinja=True,
-        template_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'templates'),
+        template_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates'),
         use_sudo=use_sudo
     )
 
 
 class ProdDjangoSettings:
-    def __init__(self, config):
+    def __init__(self):
         from src.servos import excavator
         log_path = os.path.join(config.log_path, config.name + '.log')
         run('touch {0}'.format(log_path))
@@ -32,26 +34,25 @@ class ProdDjangoSettings:
         data.name = config.name
         data.domain = config.domain
         data.email_password = config.email_password
-        data.secret = excavator.get_secret_key(config)
+        data.secret = excavator.get_secret_key()
         data.log = os.path.join(config.log_path, config.name + '.log')
         self.data = data
-        self.config = config
 
 
     def upload(self):
         filename='django.txt'
-        destination=os.path.join(self.config.git_path, self.config.name, self.config.name, 'prod_settings.py')
+        destination=os.path.join(config.git_path, config.name, config.name, 'prod_settings.py')
         context={ 'data': self.data }
         _put_template(filename, destination, context)
 
 
 class NginxConfig:
-    def __init__(self, config):
+    def __init__(self):
         self.data = Data()
         self.name = config.name
         self.data.domain = config.domain
         self.data.static_path = os.path.join(config.git_path, config.name, 'prod_static', '')
-        self.data.port = PortManager(config).get_highest_port()
+        self.data.port = PortManager().get_highest_port()
 
 
     def upload(self):
@@ -70,14 +71,14 @@ class NginxConfig:
 
 
 class SystemdService:
-    def __init__(self, config):
+    def __init__(self):
         self.data = Data()
         self.data.name = config.name
         self.data.user = config.user
         self.data.working_dir = os.path.join(config.git_path, config.name)
         self.data.gunicorn = os.path.join(config.env_path, config.name, 'bin/gunicorn')
         self.data.wsgi = config.name + '.wsgi'
-        self.data.port = PortManager(config).get_highest_port()
+        self.data.port = PortManager().get_highest_port()
 
 
     def upload(self):

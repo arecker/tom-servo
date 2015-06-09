@@ -1,13 +1,16 @@
+import random
+import string
+
 from fabric.api import *
 from fabric.contrib import files
 import yaml
-import random
-import string
 import os
+
+from src import config
 
 
 class HandShake(object):
-    def __init__(self, config):
+    def __init__(self):
         run('echo "Hello from $(hostname)!"')
         sudo('echo "SUDO hello from $(hostname)"')
 
@@ -17,7 +20,7 @@ class DependencyInstaller(object):
     passes packages listed in config
     into aptitude and npm for global installation
     """
-    def __init__(self, config):
+    def __init__(self):
         self._install_apt_deps(config.dependencies)
         self._install_npm_deps(config.npm_dependencies)
 
@@ -36,7 +39,7 @@ class PathCreator(object):
     """
     creates all config items that match "*_path"
     """
-    def __init__(self, config):
+    def __init__(self):
         for path in filter(lambda x: '_path' in x and not x.startswith('__'), dir(config)):
             run('mkdir -p {0}'.format(getattr(config, path)))
             assert files.exists(getattr(config, path))
@@ -46,14 +49,14 @@ class EnvironmentCreator(object):
     """
     instantiates a python virtualenv for the project
     """
-    def __init__(self, config):
+    def __init__(self):
         with cd(config.env_path):
             if not files.exists('./{0}'.format(config.name)):
                 run('virtualenv --no-site-packages {0}'.format(config.name))
 
 
 class GitUpdater(object):
-    def __init__(self, config):
+    def __init__(self):
         repo_path = os.path.join(config.git_path, config.name)
         if not files.exists(repo_path):
             with cd(config.git_path):
@@ -71,7 +74,7 @@ class FirewallBuilder(object):
     sets up firewall with ufw
     opens up ports specified in config
     """
-    def __init__(self, config):
+    def __init__(self):
         sudo('ufw default deny incoming')
         sudo('ufw default allow outgoing')
         for p in config.ports:
@@ -84,7 +87,7 @@ class HostWriter(object):
     """
     writes a domain to /etc/hosts if it doesn't exist yet
     """
-    def __init__(self, config):
+    def __init__(self):
         if files.contains('/etc/hosts', config.domain):
             pass
         else:
@@ -96,10 +99,9 @@ class PortManager(object):
     """
     tracks occupied ports in a config file on the server
     """
-    def __init__(self, config):
+    def __init__(self):
         self._touch_file()
         self._read_file()
-        self.config = config
 
 
     def _touch_file(self):
@@ -112,7 +114,7 @@ class PortManager(object):
 
 
     def get_highest_port(self):
-        name = self.config.name
+        name = config.name
         try:
             return self.data[name]
         except KeyError:
@@ -142,7 +144,7 @@ class PasswordGenerator:
 
 
 class DjangoMaker(object):
-    def __init__(self, config):
+    def __init__(self):
         with cd(os.path.join(config.git_path, config.name)):
             if files.exists('makefile'):
                 with prefix('source {0}'.format(os.path.join(config.env_path, config.name, 'bin/activate'))):
@@ -156,11 +158,11 @@ class DatabaseCreator(object):
     - finds the password if it is
     Either way, adds the password to the config
     """
-    def __init__(self, config):
+    def __init__(self):
         name = config.name
         if self._database_exists(name):
-            from .excavator import get_db_password
-            password = get_db_password(config)
+            from src.excavator import get_db_password
+            password = get_db_password()
         else:
             password = self._create_db(name)
         setattr(config, 'db_pass', password)
@@ -181,13 +183,13 @@ class DatabaseCreator(object):
 
 
 class DjangoApplication:
-    def __init__(self, config):
-        from renderer import ProdDjangoSettings, SystemdService, NginxConfig
-        GitUpdater(config)
-        EnvironmentCreator(config)
-        DatabaseCreator(config)
-        ProdDjangoSettings(config).upload()
-        DjangoMaker(config)
-        SystemdService(config).upload().activate()
-        NginxConfig(config).upload().activate()
-        HostWriter(config)
+    def __init__(self):
+        from src.renderer import ProdDjangoSettings, SystemdService, NginxConfig
+        GitUpdater()
+        EnvironmentCreator()
+        DatabaseCreator()
+        ProdDjangoSettings().upload()
+        DjangoMaker()
+        SystemdService().upload().activate()
+        NginxConfig().upload().activate()
+        HostWriter()

@@ -1,16 +1,16 @@
-
 from fabric.api import *
 from fabric.contrib.files import exists
 import os
 import pipes
 from src.servos import PasswordGenerator
+from src import config
 
 
 """
 A really silly module that reads settings out of
 Django settings.py files on the server
 """
-def get_db_password(config):
+def get_db_password():
     """
     Digs database password out of prod_settings.py
     If we have gotten here, the file *should* exist
@@ -20,7 +20,7 @@ def get_db_password(config):
         return run(_build_command(py_command))
 
 
-def get_secret_key(config):
+def get_secret_key():
     """
     Returns the prod_settings secret key if it exists
     If not, generates one
@@ -33,7 +33,7 @@ def get_secret_key(config):
 
 
 
-def get_installed_apps(config):
+def get_installed_apps():
     """
     Returns the INSTALLED_APPS list
     from settings.py

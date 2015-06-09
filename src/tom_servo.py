@@ -1,33 +1,21 @@
 import click
 import yaml
 from fabric.api import env
+from src import config
 
 
-class Config(object):
-    def __init__(self, path=None):
-        if path:
-            return self._build_from_file(path)
-        return None
-
-
-    def _build_from_file(self, path):
-        with open(path) as file:
-            data = yaml.load(file)
-            return self._build_config(data)
-
-
-    def _build_from_input(self):
-        pass
-
-
-    def _build_config(self, data):
+def build_config_from_file(path=None):
+    with open(path) as file:
+        data = yaml.load(file)
         for item in data:
-            if item == 'env':
+            if item == 'env': # set fabric environment
                 env_place = data['env']
                 for i in data[item]:
                     setattr(env, i, env_place[i])
             else:
-                setattr(self, item, data[item])
+                setattr(config, item, data[item])
+
+
 
 
 @click.group()
@@ -44,8 +32,9 @@ def handshake(config):
     """
     say hello to the server
     """
-    from servos import HandShake
-    HandShake(Config(config))
+    build_config_from_file(config)
+    from helpers import HandShake
+    HandShake()
 
 
 @cli_main.command()
@@ -54,15 +43,15 @@ def bootstrap(config):
     """
     bootstrap a server
     """
-    c = Config(config)
-    from servos import PathCreator
-    PathCreator(c)
+    build_config_from_file(config)
+    from helpers import PathCreator
+    PathCreator()
     
-    from servos import DependencyInstaller
-    DependencyInstaller(c)
+    from helpers import DependencyInstaller
+    DependencyInstaller()
 
-    from servos import FirewallBuilder
-    FirewallBuilder(c)
+    from helpers import FirewallBuilder
+    FirewallBuilder()
 
 
 @cli_main.command()
@@ -71,24 +60,9 @@ def django(config):
     """
     deploy a django application
     """
-    c = Config(config)
-    from servos import DjangoApplication
-    DjangoApplication(c)
-
-
-@cli_main.command()
-def test():
-    """
-    test something random
-    """
-    import jinja2
-    import os
-    path = os.path.join(os.path.dirname(__file__),"templates")
-    print('PATH: ' + path)
-    loader=jinja2.FileSystemLoader(path)
-    env = jinja2.Environment(loader=loader)
-    template = env.get_template('test.txt')
-    print template.render()
+    build_config_from_file(config)
+    from helpers import DjangoApplication
+    DjangoApplication()
 
 
 if __name__ == '__main__':
