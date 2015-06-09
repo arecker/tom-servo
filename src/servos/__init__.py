@@ -3,6 +3,7 @@ from fabric.contrib import files
 import yaml
 import random
 import string
+import os
 
 
 class HandShake(object):
@@ -39,6 +40,30 @@ class PathCreator(object):
         for path in filter(lambda x: '_path' in x and not x.startswith('__'), dir(config)):
             run('mkdir -p {0}'.format(getattr(config, path)))
             assert files.exists(getattr(config, path))
+
+
+class EnvironmentCreator(object):
+    """
+    instantiates a python virtualenv for the project
+    """
+    def __init__(self, config):
+        with cd(config.env_path):
+            if not files.exists('./{0}'.format(config.name)):
+                run('virtualenv --no-site-packages {0}'.format(config.name))
+
+
+class GitUpdater(object):
+    def __init__(self, config):
+        repo_path = os.path.join(config.git_path, config.name)
+        if not files.exists(repo_path):
+            with cd(config.git_path):
+                run('git clone {0} {1}'.format(config.url, config.name))
+
+        # Clean and pull if it does
+        else:
+            with cd(repo_path):
+                run('git reset --hard origin/master')
+                run('git pull origin master')
 
 
 class FirewallBuilder(object):
@@ -146,4 +171,7 @@ class DatabaseCreator(object):
 
 
 class DjangoApplication:
-    pass
+    def __init__(self, config):
+        GitUpdater(config)
+        EnvironmentCreator(config)
+        DatabaseCreator(config)
