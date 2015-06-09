@@ -76,5 +76,13 @@ def django(config):
     DjangoApplication(c)
 
 
+@cli_main.command()
+def test():
+    """
+    test something random
+    """
+    print('hello')
+
+
 if __name__ == '__main__':
     cli_main()

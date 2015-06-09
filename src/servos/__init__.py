@@ -114,5 +114,36 @@ class PasswordGenerator:
         return PasswordGenerator._generate_hash(10)
 
 
+class DatabaseCreator(object):
+    """
+    Ensures the app database is created
+    - generates a password if it is not
+    - finds the password if it is
+    Either way, adds the password to the config
+    """
+    def __init__(self, config):
+        name = config.name
+        if self._database_exists(name):
+            from .excavator import get_db_password
+            password = get_db_password(config)
+        else:
+            password = self._create_db(name)
+        setattr(config, 'db_pass', password)
+
+
+    def _database_exists(self, db_name):
+        return sudo('psql -lqt | cut -d \| -f 1 | grep -w {0} | wc -l'.format(db_name),  user='postgres') == '1'
+
+
+    def _create_db(self, name):
+        db_pass = PasswordGenerator.generate_db_password()
+        sudo('psql -c "CREATE DATABASE {0};"'.format(name), user='postgres')
+        sudo('psql -c "CREATE USER {0} WITH PASSWORD {1};"'.format(name, '\'' + db_pass + '\''), user='postgres')
+        sudo('psql -c "GRANT ALL PRIVILEGES ON DATABASE {0} TO {0};"'.format(name), user='postgres')
+        if not self._database_exists(name):
+            raise 'Database was not created, yo'
+        return db_pass
+
+
 class DjangoApplication:
     pass
