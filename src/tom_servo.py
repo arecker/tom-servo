@@ -65,5 +65,16 @@ def django(config):
     DjangoApplication()
 
 
+@cli_main.command()
+@click.option('config', '--config', type=click.Path(), help='path to config file')
+def static(config):
+    """
+    deploy a static site
+    """
+    build_config_from_file(config)
+    from helpers import StaticWebsite
+    StaticWebsite()
+
+
 if __name__ == '__main__':
     cli_main()

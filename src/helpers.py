@@ -181,6 +181,10 @@ class DatabaseCreator(object):
             raise 'Database was not created, yo'
         return db_pass
 
+class StaticWebsite:
+    def __init__(self):
+        pass
+
 
 class DjangoApplication:
     def __init__(self):
