@@ -1,6 +1,8 @@
 from fabric.api import *
 from fabric.contrib import files
 import yaml
+import random
+import string
 
 
 class HandShake(object):
@@ -62,3 +64,55 @@ class HostWriter(object):
             pass
         else:
             files.append('/etc/hosts', '127.0.0.1    {0}'.format(config.domain, use_sudo=True))
+
+
+class PortManager(object):
+    """
+    tracks occupied ports in a config file on the server
+    """
+    def __init__(self, config):
+        self._touch_file()
+        self._read_file()
+        return self._get_highest_port(config.name)
+
+
+    def _touch_file(self):
+        if not files.exists('~/ports.yml'):
+            run('echo "localhost: 7999" > ~/ports.yml')
+
+
+    def _read_file(self, name):
+        self.data = yaml.load(run('cat ~/ports.yml'))
+
+
+    def _get_highest_port(self, name):
+        try:
+            return self.data[name]
+        except KeyError:
+            if len(self.data) is 0:
+                highest_port = 7999
+            else:
+                highest_port = self.data[max(self.data, key=self.data.get)]
+            self.data[name] = str(int(highest_port) + 1)
+            files.append('~/ports.yml', '{0}: {1}'.format(name, self.data[name]))
+            return self.data[name]
+
+
+class PasswordGenerator:
+    @classmethod
+    def _generate_hash(cls, length):
+        return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
+
+
+    @staticmethod
+    def generate_django_password():
+        return PasswordGenerator._generate_hash(100)
+
+
+    @staticmethod
+    def generate_db_password():
+        return PasswordGenerator._generate_hash(10)
+
+
+class DjangoApplication:
+    pass
