@@ -3,6 +3,7 @@ import string
 
 from fabric.api import *
 from fabric.contrib import files
+from fabric.operations import *
 import yaml
 import os
 
@@ -181,19 +182,49 @@ class DatabaseCreator(object):
             raise 'Database was not created, yo'
         return db_pass
 
+
+class SiteUpdater(object):
+    """
+    takes a path to a tar.gz from the config
+    updates the site on the webroot with the payload
+    """
+    def __init__(self):
+        self._put_payload()
+        self._open_payload()
+        self._clean_up()
+
+
+    def _put_payload(self):
+        put(config.payload, '/tmp/{0}.tar.gz'.format(config.name))
+
+
+    def _open_payload(self):
+        www_path = os.path.join(config.www_path, config.name)
+        sudo('mkdir -p {0}'.format(www_path))
+        sudo('tar xvf /tmp/{0}.tar.gz -C {1}'.format(config.name, www_path))
+
+
+    def _clean_up(self):
+        sudo('rm /tmp/{0}.tar.gz'.format(config.name))
+        sudo('chown -R www-data {0}'.format(config.www_path))
+
+
 class StaticWebsite:
     def __init__(self):
-        pass
+        from src.renderer import NginxStaticConfig
+        SiteUpdater()
+        NginxStaticConfig().upload().activate()
+        HostWriter()
 
 
 class DjangoApplication:
     def __init__(self):
-        from src.renderer import ProdDjangoSettings, SystemdService, NginxConfig
+        from src.renderer import ProdDjangoSettings, SystemdService, NginxDjangoConfig
         GitUpdater()
         EnvironmentCreator()
         DatabaseCreator()
         ProdDjangoSettings().upload()
         DjangoMaker()
         SystemdService().upload().activate()
-        NginxConfig().upload().activate()
+        NginxDjangoConfig().upload().activate()
         HostWriter()

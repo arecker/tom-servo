@@ -46,7 +46,7 @@ class ProdDjangoSettings:
         _put_template(filename, destination, context)
 
 
-class NginxConfig:
+class NginxDjangoConfig:
     def __init__(self):
         self.data = Data()
         self.name = config.name
@@ -57,6 +57,32 @@ class NginxConfig:
 
     def upload(self):
         filename='django_nginx.txt'
+        destination=os.path.join('/etc/nginx/sites-available', self.name)
+        context={ 'data': self.data }
+        _put_template(filename, destination, context, use_sudo=True)
+        return self
+
+
+    def activate(self):
+        enabled_path = os.path.join('/etc/nginx/sites-enabled/{0}'.format(self.name))
+        if not files.exists(enabled_path):
+            sudo('ln -s /etc/nginx/sites-available/{0} /etc/nginx/sites-enabled/{0}'.format(self.name))
+        sudo('nginx -s reload')
+
+
+class NginxStaticConfig:
+    """
+    This class should share stuff with the django nginx class
+    """
+    def __init__(self):
+        self.data = Data()
+        self.name = config.name
+        self.data.path = os.path.join(config.www_path, config.name)
+        self.data.domain = config.domain
+
+
+    def upload(self):
+        filename='static_nginx.txt'
         destination=os.path.join('/etc/nginx/sites-available', self.name)
         context={ 'data': self.data }
         _put_template(filename, destination, context, use_sudo=True)
