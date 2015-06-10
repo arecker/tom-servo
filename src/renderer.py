@@ -22,7 +22,7 @@ def _put_template(filename, destination, context, use_sudo=False):
 
 class ProdDjangoSettings:
     def __init__(self):
-        from src.servos import excavator
+        from src import excavator
         log_path = os.path.join(config.log_path, config.name + '.log')
         run('touch {0}'.format(log_path))
 

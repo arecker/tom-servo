@@ -2,7 +2,7 @@ from fabric.api import *
 from fabric.contrib.files import exists
 import os
 import pipes
-from src.servos import PasswordGenerator
+from src.helpers import PasswordGenerator
 from src import config
 
 
