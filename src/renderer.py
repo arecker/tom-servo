@@ -1,8 +1,7 @@
 import os
 from fabric.contrib import files
 from fabric.api import *
-
-from src.servos import PortManager
+from src.helpers import PortManager
 from src import config
 
 
