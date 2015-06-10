@@ -1,0 +1,17 @@
+MANIFEST.in
+setup.py
+src/__init__.py
+src/excavator.py
+src/helpers.py
+src/renderer.py
+src/tom_servo.py
+src/templates/django.txt
+src/templates/django_nginx.txt
+src/templates/static_nginx.txt
+src/templates/systemd.txt
+tom_servo.egg-info/PKG-INFO
+tom_servo.egg-info/SOURCES.txt
+tom_servo.egg-info/dependency_links.txt
+tom_servo.egg-info/entry_points.txt
+tom_servo.egg-info/requires.txt
+tom_servo.egg-info/top_level.txt
