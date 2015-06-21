@@ -51,6 +51,7 @@ class NginxDjangoConfig:
         self.name = config.name
         self.data.domain = config.domain
         self.data.static_path = os.path.join(config.git_path, config.name, 'prod_static', '')
+        self.data.media_path = os.path.join(config.git_path, config.name, 'uploads', '')
         self.data.port = PortManager().get_highest_port()
 
 
