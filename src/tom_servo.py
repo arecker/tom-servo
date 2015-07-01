@@ -18,32 +18,40 @@ def build_config_from_file(path=None):
 
 
 
-@click.group()
-def cli_main():
+@click.command()
+@click.option('config_file', '--config', type=click.Path(), help='path to config file')
+def cli_main(config_file):
     """
     tom-servo: the snarky linux server assistant
     """
-    pass
+    if not config:
+        print('Please supply a valid --config path')
+        exit()
+
+    try:
+        build_config_from_file(config_file)
+        { 'handshake': handshake,
+          'bootstrap': bootstrap,
+          'static': static,
+          'django': django }[config.profile]()
+    except:
+        print('Invalid config file?')
+        exit()
 
 
-@cli_main.command()
-@click.option('config', '--config', type=click.Path(), help='path to config file')
-def handshake(config):
+
+def handshake():
     """
     say hello to the server
     """
-    build_config_from_file(config)
     from helpers import HandShake
     HandShake()
 
 
-@cli_main.command()
-@click.option('config', '--config', type=click.Path(), help='path to config file')
-def bootstrap(config):
+def bootstrap():
     """
     bootstrap a server
     """
-    build_config_from_file(config)
     from helpers import PathCreator
     PathCreator()
     
@@ -54,24 +62,18 @@ def bootstrap(config):
     FirewallBuilder()
 
 
-@cli_main.command()
-@click.option('config', '--config', type=click.Path(), help='path to config file')
-def django(config):
+def django():
     """
     deploy a django application
     """
-    build_config_from_file(config)
     from helpers import DjangoApplication
     DjangoApplication()
 
 
-@cli_main.command()
-@click.option('config', '--config', type=click.Path(), help='path to config file')
-def static(config):
+def static():
     """
     deploy a static site
     """
-    build_config_from_file(config)
     from helpers import StaticWebsite
     StaticWebsite()
 
