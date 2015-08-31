@@ -1,16 +1,32 @@
 import click
+from __init__ import Config
 
 
-@click.group(invoke_without_command=True)
-@click.argument('config', type=click.Path(exists=True), required=False)
-def main(config=None):
+@click.group()
+def main():
     """
     the snarky linux server assistant
     """
-    if not config:
-        print('config help')
-        exit()
-    print('Config: {0}'.format(config))
+    pass
+
+
+@main.command()
+@click.argument('config', type=click.Path(exists=True))
+def prod(config):
+    """
+    execute a servo on the production host
+    """
+    from servos.sanity import HandshakeServo
+    HandshakeServo(Config(config)).run()
+
+
+@main.command()
+@click.argument('config', type=click.Path(exists=True))
+def stage(config):
+    """
+    execute a servo on the staging host
+    """
+    pass
 
 
 if __name__ == '__main__':
