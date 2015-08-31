@@ -1,4 +1,0 @@
-click
-fabric
-pyyaml
-jinja2
