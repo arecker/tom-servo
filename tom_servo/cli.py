@@ -11,22 +11,29 @@ def main():
 
 
 @main.command()
+@click.option('--password', prompt='sudo password', hide_input=True,
+              confirmation_prompt=True)
 @click.argument('config', type=click.Path(exists=True))
-def prod(config):
+def prod(config, password):
     """
     execute a servo on the production host
     """
     from servos.sanity import HandshakeServo
-    HandshakeServo(Config(config)).run()
+    c = Config(config).password(password).prod()
+    HandshakeServo(c).run()
 
 
 @main.command()
+@click.option('--password', prompt='sudo password', hide_input=True,
+              confirmation_prompt=True)
 @click.argument('config', type=click.Path(exists=True))
-def stage(config):
+def stage(config, password):
     """
     execute a servo on the staging host
     """
-    pass
+    from servos.sanity import HandshakeServo
+    c = Config(config).password(password).stage()
+    HandshakeServo(c).run()
 
 
 if __name__ == '__main__':
