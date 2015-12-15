@@ -58,7 +58,7 @@ CACHES = {
     }
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = 'post_office.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'alex@reckerfamily.com'
 EMAIL_HOST_PASSWORD = '{{ data.email_password }}'
