@@ -34,9 +34,9 @@ def cli_main(config_file):
           'bootstrap': bootstrap,
           'static': static,
           'django': django }[config.profile]()
-    except:
-        print('Invalid config file?')
-        exit()
+    except Exception as e:
+        print(e)
+        exit(1)
 
 
 
